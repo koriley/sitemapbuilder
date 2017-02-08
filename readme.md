@@ -18,6 +18,8 @@ Motivation:
 Working on big sites with no site map, and most site map applications I found cost money. Why should I pay when I can code?
 
 Todo:
-  1) Add tests
-  2) give it a web based interface
-  3) dream of more things this can do. Any ideas?
+```html
+  1) Add tests<br/>
+  2) give it a web based interface<br/>
+  3) dream of more things this can do. Any ideas?</br>
+```
