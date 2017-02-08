@@ -21,7 +21,7 @@ const argv = yargs
   .help()
   .alias('help', 'h')
   .argv;
-
+var counter = 0;
 if ((argv.name === undefined) || (argv.name === '')) {
   var inputName = "sitemap";
 } else {
@@ -41,13 +41,15 @@ generator.on('done', function(sitemap) {
       return console.log(err);
     }
 
+
     console.log("The file was saved!");
   });
 });
 
 generator.on('clienterror', (queueError, errorData) => {
   console.log(`There was an error ${queueError} || ${errorData}`)
-  fs.writeFile("logs/errorLogQueue.txt", queueError + ' ' + errorData +
+  fs.writeFile("logs/" + inputName + "-errorLogQueue.txt", queueError + ' ' +
+    errorData +
     '\r', (err) => {
       if (err) {
         return console.log(err);
@@ -57,19 +59,28 @@ generator.on('clienterror', (queueError, errorData) => {
 });
 
 generator.on('fetch', (status, url) => {
-  console.log(" fetch: " + status + " " + url);
-  fs.writeFile("logs/statusLog.txt", status + ' ' + url + '\r', {
-    flag: 'a'
-  }, (err) => {
-    if (err) {
-      return console.log(err);
-    }
-  });
-  // fs.writeFile("logs/errorLogSata.txt", errorData, (err)=>{
-  //   if(err){
-  //     return console.log(err);
-  //   }
-  // });
+  counter = counter + 1
+  console.log(" fetch: " + counter + ' ' + status + " " + url);
+  fs.writeFile("logs/" + inputName + "-statusLog.txt", counter + ' ' +
+    status + ' ' + url +
+    '\r', {
+      flag: 'a'
+    }, (err) => {
+      if (err) {
+        return console.log(err);
+      }
+    });
+  if (status === "Not Found") {
+    fs.writeFile("logs/" + inputName + "-brokenLinks.txt", counter + ' ' +
+      status + ' ' + url +
+      '\r', {
+        flag: 'a'
+      }, (err) => {
+        if (err) {
+          return console.log(err);
+        }
+      });
+  }
 });
 
 //start the crawler
