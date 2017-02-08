@@ -22,7 +22,7 @@ const argv = yargs
   .alias('help', 'h')
   .argv;
 
-if (argv.name === undefined) {
+if ((argv.name === undefined) || (argv.name === '')) {
   var inputName = "sitemap";
 } else {
   var inputName = argv.name;
@@ -47,21 +47,20 @@ generator.on('done', function(sitemap) {
 
 generator.on('clienterror', (queueError, errorData) => {
   console.log(`There was an error ${queueError} || ${errorData}`)
-  fs.writeFile("logs/errorLogQueue.txt", queueError, (err) => {
-    if (err) {
-      return console.log(err);
-    }
-  });
-  fs.writeFile("logs/errorLogSata.txt", errorData, (err) => {
-    if (err) {
-      return console.log(err);
-    }
-  });
+  fs.writeFile("logs/errorLogQueue.txt", queueError + ' ' + errorData +
+    '\r', (err) => {
+      if (err) {
+        return console.log(err);
+      }
+    });
+
 });
 
 generator.on('fetch', (status, url) => {
-  console.log("fetch" + status + " " + url);
-  fs.writeFile("logs/statusLog.txt", status + ' ' + url, (err) => {
+  console.log(" fetch: " + status + " " + url);
+  fs.writeFile("logs/statusLog.txt", status + ' ' + url + '\r', {
+    flag: 'a'
+  }, (err) => {
     if (err) {
       return console.log(err);
     }
