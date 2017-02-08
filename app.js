@@ -36,7 +36,7 @@ var generator = new sitemap(argv.url);
 generator.on('done', function(sitemap) {
   //console.log(sitemap); // => prints xml sitemap
 
-  fs.writeFile("tmp/" + inputName + ".xml", sitemap, function(err) {
+  fs.writeFile("xml_files/" + inputName + ".xml", sitemap, function(err) {
     if (err) {
       return console.log(err);
     }

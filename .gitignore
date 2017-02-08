@@ -1,5 +1,5 @@
 node_modules
 tmp/*
-!tmp/.gitkeep
+!xml_files/.gitkeep
 logs/*
 !logs/.gitkeep

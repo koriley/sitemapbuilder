@@ -1,13 +1,10 @@
 Site Map Builder v0.0.1
 
-
-Synopsis
-
 This is a lite weight, command line, nodejs application that will build an xml site map of a site. It does not go into any ?foo=bar arguments, but keeps to the main pages.
 
-Code Example
+Use Example:
 
-From the command line type "node app.js -u 'http://www.something.com' -n 'filename'" This will create an .xml document with your filename in the tmp/ directory.
+From the command line type "node app.js -u 'http://www.something.com' -n 'filename'" This will create an .xml document with your filename in the xml_files/ directory.
 
 Help:
 node app.js -h
