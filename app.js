@@ -1,12 +1,12 @@
 const sitemap = require('sitemap-generator');
 const fs = require('fs');
-const xRay = require('x-ray');
+
 const yargs = require('yargs');
 const xml2js = require('xml2js');
-var scrub = require("./modules/scrub.js");
+const jsonfile = require('jsonfile');
+var scrub = require("./modules/scrub");
 
 
-var x = xRay();
 
 const argv = yargs
   .options({
@@ -38,7 +38,7 @@ var jsonCount = 0;
 var imgs = [];
 var links = [];
 var body = "";
-var something;
+var scrubObject = {};
 
 if (argv.scrub) {
   console.log("with scrubing");
@@ -70,9 +70,25 @@ generator.on('done', function(sitemap) {
         if (err) {
           console.log(err);
         }
-        console.log(JSON.stringify(res.urlset.url.length,
-          undefined, 2));
+        // console.log(JSON.stringify(res.urlset.url[0].loc[0],
+        //   undefined, 2));
 
+        if (argv.scrub) {
+          console.log(
+            "Starting Scrubbing, this may take a while.");
+          var targetLength = res.urlset.url.length - 1;
+          for (var i = 0; i <= targetLength; i++) {
+            var childTargetLength = res.urlset.url[i].loc.length -
+              1;
+            for (var k = 0; k <= childTargetLength; k++) {
+              scrubObject = {
+                url: res.urlset.url[i].loc[k],
+                link: scrub.getLinks(res.urlset.url[i].loc[k])
+              }
+            }
+          }
+          console.log(JSON.stringify(scrubObject, undefined, 2));
+        }
       });
     });
     console.log("The file was saved!");
