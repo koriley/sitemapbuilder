@@ -3,3 +3,6 @@ xml_files/*
 !xml_files/.gitkeep
 logs/*
 !logs/.gitkeep
+
+jsonDB/*
+!jsonDB/.gitkeep

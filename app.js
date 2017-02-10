@@ -2,6 +2,9 @@ const sitemap = require('sitemap-generator');
 const fs = require('fs');
 const xRay = require('x-ray');
 const yargs = require('yargs');
+const xml2js = require('xml2js');
+var scrub = require("./modules/scrub.js");
+
 
 var x = xRay();
 
@@ -10,7 +13,7 @@ const argv = yargs
     u: {
       demand: true,
       alias: 'url',
-      describe: 'URL to get site map of requires full url: http://www.something.com',
+      describe: 'URL to create site map.',
       string: true
     },
     n: {
@@ -18,6 +21,12 @@ const argv = yargs
       alias: 'name',
       describe: 'File name to save the xml document in. tmp/',
       string: true
+    },
+    s: {
+      deman: false,
+      alias: 'scrub',
+      describe: "Get all the contents from each page in the map.",
+      bool: true
     }
   })
   .help()
@@ -28,6 +37,12 @@ var json = {};
 var jsonCount = 0;
 var imgs = [];
 var links = [];
+var body = "";
+var something;
+
+if (argv.scrub) {
+  console.log("with scrubing");
+}
 //end vars
 
 if ((argv.name === undefined) || (argv.name === '')) {
@@ -49,9 +64,17 @@ generator.on('done', function(sitemap) {
     if (err) {
       return console.log(err);
     }
-    //here we are going to write our json file of what we found
-    console.log(JSON.stringify(json, 'undefined', 2));
-    //everything is done, lets tell the user.
+    var parser = new xml2js.Parser();
+    fs.readFile("xml_files/" + inputName + ".xml", (err, data) => {
+      parser.parseString(data, (err, res) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log(JSON.stringify(res.urlset.url.length,
+          undefined, 2));
+
+      });
+    });
     console.log("The file was saved!");
   });
 });
@@ -82,22 +105,7 @@ generator.on('fetch', (status, url) => {
         return console.log(err);
       }
     });
-  //create a json of all the good internal urls
-  if (status != "Not Found") {
-    console.log(url);
 
-
-
-    links = getLinks(url);
-    imgs = getImages(url);
-    json[jsonCount] = {
-      'url': url,
-      'images': imgs,
-      'links': links
-    }
-    jsonCount++;
-
-  }
   //create a log of all the not so good internal urls
   if (status === "Not Found") {
     fs.writeFile("logs/" + inputName + "-brokenLinks.txt", counter +
@@ -115,37 +123,7 @@ generator.on('fetch', (status, url) => {
 
 });
 
-function getImages(url) {
-  var imgs = [];
-  x(url, ['img@src'])(function(err, siteImages) {
-    if (err) {
-      return console.log(err);
-    }
 
-    var len = siteImages.length;
-
-    for (var i = 0; i <= len - 2; i++) {
-      imgs[i] = siteImages[i];
-    }
-
-  });
-  return imgs;
-}
-
-function getLinks(url) {
-  var links = [];
-  x(url, ['a@href'])(function(err, pageLinks) {
-    if (err) {
-      return console.log(err);
-    }
-    var len = pageLinks.length;
-    for (var i = 0; i <= len - 2; i++) {
-      links[i] = pageLinks[i];
-
-    }
-  });
-  return links;
-}
 
 //start the crawler
 generator.start();
